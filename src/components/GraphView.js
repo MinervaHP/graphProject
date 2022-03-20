@@ -4,6 +4,7 @@ import DraggableCircle from './DraggableCircle';
 import Button from './Button'
 import { FaPlusCircle, FaArrowsAltV, FaTrash } from "react-icons/fa";
 import Line from './Line';
+import { Xwrapper } from 'react-xarrows';
 
 const GraphView = (saveGraph) => {
   //מבנה הנתונים ששומר את הקודקודים
@@ -16,10 +17,7 @@ const GraphView = (saveGraph) => {
   const [canAdd, setCanAdd] = useState(true);
   const [canRemove, setCanRemove] = useState(false);
   const [canDrawLine, setCanDrawLine] = useState(false);
-  const [vertexProps, setVertexProps] = useState({
-    "count": 0,
-    "clickHandler": () => undefined
-  });
+  const [onVertexClick, setOnVertexClick] = useState(() => () => undefined);
 
   //האם הקודקוד שנלחץ ראשון או לא
   const firstVertex = useRef(null);
@@ -29,56 +27,73 @@ const GraphView = (saveGraph) => {
 
   }
   //מצייר קודקודים כל עוד לא הגיע ל50 אח"כ אי אפשר
+  useEffect(function () {
+
+    let newList =
+      circlesList.map((circle, i) => {
+        return React.cloneElement(
+          circle,
+          { clickHandler: onVertexClick }
+        )
+
+      });
+    setCirclesList(newList);
+  }, [onVertexClick])
+
   const drawCircle = () => {
-    if (vertexProps.count <= 50) {
-      let updated = vertexProps;
-      updated.count = vertexProps.count + 1;
-      setVertexProps({ ...vertexProps, ...updated });
+    if (circlesList.length <= 50) {
+      let currentKey = circlesList.length == 0 ? 0 : parseInt(circlesList[circlesList.length - 1].key) + 1;
+      setCirclesList([...circlesList, <DraggableCircle key={currentKey}
+        vKey={currentKey + 1}
+        clickHandler={onVertexClick} />]);
       setData(` לחץ על הכפתור על מנת להוסיף קודקודים (שים לב הינך מוגבל ל-50 קודקודים) \n לאחר ההוספה ניתן למקם את הקודקודים במקום הרצוי ע"י גרירת הקודקוד`)
     }
     else {
       setCanAdd(false);
     }
-    if (vertexProps.count >= 0) {
+    if (circlesList.length >= 0) {
       setCanRemove(true)
     }
-    if (vertexProps.count >= 1 && !canDrawLine) {
+    if (circlesList.length >= 1 && !canDrawLine) {
       setCanDrawLine(true);
     }
   }
-
   const onDrawLineClick = () => {
-    let updated = vertexProps;
-    updated.clickHandler = drawLine;
-    setVertexProps({ ...vertexProps, ...updated })
+    setOnVertexClick(() => drawLine);
+    setData('לחצו על קודקוד המקור ממנו ברצונכם למתוח קשת ולאחר מכן לחצו על קודקוד היעד אליו תרצו למתוך את הקשת')
   }
 
   const onDeleteClick = () => {
-    let updated = vertexProps;
-    updated.clickHandler = deleteObjects;
-    setVertexProps({ ...vertexProps, ...updated });
+    setOnVertexClick(() => deleteObjects);
+    setData('לחץ על הקודקוד  שברצונך למחוק')
   }
 
   //מצייר את הקשתות בין קודקוד לקודקוד
   const drawLine = (sender) => {
     console.log("e:", sender);
+
     //בודק האם הקודקוד שנלחץ הוא נקודת מוצא או לא
     if (!firstVertex.current) {
       firstVertex.current = sender;
     }
     //ברגע שנלחץ קודקוד היעד מותח את הקשת
     else {
-      let line = <Line key={linesList.length} start={firstVertex.current} end={sender.current} />
-      setLinesList([...linesList, line]);
+      let key = Math.floor(Math.random() * 100);
+
+      setLinesList(prevList => [...prevList,
+      <Line key={key} start={firstVertex.current} end={sender} />]);
+      sender.current.style.backgroundColor = '#ffcc66';
+      firstVertex.current.current.style.backgroundColor = '#ffcc66';
       firstVertex.current = null;
     }
   }
 
   const deleteObjects = (sender) => {
-    console.log("etyg:", sender);
-          let updated = vertexProps;
-      updated.count = vertexProps.count - 1;
-      setVertexProps({ ...vertexProps, ...updated });
+
+    const circleDelete = circlesList.filter(item => {
+      return item.props.vKey != sender.current['id'];
+    });
+    setCirclesList(circleDelete);
 
   }
 
@@ -95,10 +110,10 @@ const GraphView = (saveGraph) => {
       <div className='Explenation' >{data}</div>
       {/* //מקום ההתרחשות בפועל */}
       <div className='container'>
-        {[...Array(vertexProps.count)].map((e, i) =>
-          <DraggableCircle key={i} vKey={i + 1}
-            clickHandler={vertexProps.clickHandler} />)}
-        {linesList}
+        <Xwrapper>
+          {circlesList}
+          {linesList}
+        </Xwrapper>
       </div>
 
     </>
