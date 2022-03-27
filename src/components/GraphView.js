@@ -89,6 +89,11 @@ const GraphView = (saveGraph) => {
   }
 
   const deleteObjects = (sender) => {
+    const linesDelete = linesList.filter(item => {
+      return item.props.start != sender && item.props.end != sender;
+    }
+    );
+    setLinesList(linesDelete);
 
     const circleDelete = circlesList.filter(item => {
       return item.props.vKey != sender.current['id'];
