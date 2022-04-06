@@ -5,11 +5,11 @@ import GraphView from './components/GraphView';
 import Footer from './components/Footer';
 
 function App() {
-  const num = 1;
+
   return (
     <div className="App">
-      <GraphView/>
-      <Footer/>
+      <GraphView />
+      <Footer />
     </div>
 
   );

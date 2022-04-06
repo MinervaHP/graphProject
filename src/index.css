@@ -26,7 +26,44 @@ code {
   font-family: inherit;
   border-color: #ffcc66;
 }
+.btnModal {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  background: #000;
+  color: #fff;
+  border: 2px solid;
+  padding: 10px 20px;
+  text-align: center;
+  margin-top: 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 15px;
+  font-family: inherit;
+  border-color: #ffcc66;
+}
+.model{
+  
+  background: rgb(251, 251, 251);
+  color: rgb(9, 9, 9);
+  border: 2px solid;
+  padding: 10px 20px;
+  margin: 5px;
+  border-radius: 5px;
+  font-size: 15px;
+  font-family: inherit;
+  border-color: #eca412;
+  width: 20%;
+  height: 140px;
+}
+.display-block {
+  display: block;
+}
 
+.display-none {
+  display: none;
+}
 .btn:disabled {
   background: gray;
 }
